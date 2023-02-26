@@ -2,11 +2,10 @@ import 'dart:convert';
 
 import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/api/secret.dart';
-import 'package:anime_chill/screens/video_player_widget.dart';
+import 'package:anime_chill/screens/better_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:video_player/video_player.dart';
 
 class AnimeWatchScreen extends StatelessWidget {
   final String animeEpisodeId;
@@ -17,7 +16,7 @@ class AnimeWatchScreen extends StatelessWidget {
 
   Future<EpisodeLinks> getSources() async {
     try {
-      final response = await http.get(animeEpisodes(animeEpisodeId));
+      final response = await http.get(animeEpisodes(animeEpisodeId, defaultBaseUrl));
       if (response.statusCode != 200) {
         throw Exception(response.reasonPhrase.toString());
       }
@@ -49,13 +48,6 @@ class AnimeWatchScreen extends StatelessWidget {
           return ListView.builder(
             itemCount: episodeLinks.sources.length,
             itemBuilder: (ctx, i) {
-              final networkController = VideoPlayerController.network(
-                episodeLinks.sources[i].file,
-                videoPlayerOptions: VideoPlayerOptions(
-                  allowBackgroundPlayback: true,
-                ),
-              );
-
               return CupertinoButton(
                 child: Text(
                   "Source $i",
@@ -68,9 +60,11 @@ class AnimeWatchScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => PlayerWidget(
-                        videoPlayerController: networkController,
-                      ),
+                      builder: (_) {
+                        return BetterVideoPlayer(
+                          url: episodeLinks.sources[i].file,
+                        );
+                      },
                     ),
                   );
                 },

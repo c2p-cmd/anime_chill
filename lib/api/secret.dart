@@ -1,5 +1,29 @@
-Uri searchAnime(String animeName) => Uri.parse('https://gogoanime.consumet.stream/search?keyw=$animeName');
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
-Uri animeDetails(String animeId) => Uri.parse('https://gogoanime.consumet.stream/anime-details/$animeId');
+const mine = 'https://webdis-z7xm.onrender.com';
+const gogoAnime = 'https://gogoanime.consumet.stream';
 
-Uri animeEpisodes(String episodeId) => Uri.parse("https://gogoanime.consumet.stream/vidcdn/watch/$episodeId");
+Uri searchAnime(String animeName, [String baseUrl = gogoAnime]) =>
+    Uri.parse('$baseUrl/search?keyw=$animeName');
+
+Uri animeDetails(String animeId, [String baseUrl = gogoAnime]) =>
+    Uri.parse('$baseUrl/anime-details/$animeId');
+
+Uri animeEpisodes(String episodeId, [String baseUrl = gogoAnime]) =>
+    Uri.parse("$baseUrl/vidcdn/watch/$episodeId");
+
+Uri popularAnime([String baseUrl = gogoAnime]) => Uri.parse('$baseUrl/popular');
+
+String defaultBaseUrl = gogoAnime;
+
+const urlWidgets = [
+  DropdownMenuItem(
+    value: gogoAnime,
+    child: Text("GogoAnime"),
+  ),
+  DropdownMenuItem(
+    value: mine,
+    child: Text('Mine'),
+  ),
+];

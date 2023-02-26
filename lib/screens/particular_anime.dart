@@ -22,7 +22,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
   Future<AnimeInfo> fetchAnime() async {
     try {
       final id = widget.animeId;
-      final response = await http.get(animeDetails(id));
+      final response = await http.get(animeDetails(id, defaultBaseUrl));
       if (response.statusCode != 200) {
         throw Exception(response.reasonPhrase.toString());
       }

@@ -23,9 +23,11 @@ class AnimeListScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final animeSearchResult = results[i];
                 return ListTile(
+                  enableFeedback: true,
                   isThreeLine: true,
                   leading: CircleAvatar(
                     foregroundImage: NetworkImage(animeSearchResult.img),
+                    radius: 33,
                   ),
                   title: Text(
                     animeSearchResult.title,
