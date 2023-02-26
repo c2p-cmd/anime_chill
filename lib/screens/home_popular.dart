@@ -27,8 +27,8 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
         throw http.ClientException(response.reasonPhrase.toString());
       }
 
-      final List<dynamic> jsonDecoded =
-          jsonDecode(utf8.decode(response.bodyBytes));
+      final jsonDecoded =
+          jsonDecode(utf8.decode(response.bodyBytes))['results'];
       final List<AnimePopular> animeList =
           List.from(jsonDecoded.map((e) => AnimePopular.fromJson(e)));
       return animeList;
@@ -41,17 +41,14 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: DropdownButton(
-          value: defaultBaseUrl,
-          items: urlWidgets,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() {
-                defaultBaseUrl = value;
-              });
-            }
-          },
+        title: Text(
+          "Anime Chill".toUpperCase(),
+          style: const TextStyle(
+            fontStyle: FontStyle.italic,
+            fontWeight: FontWeight.bold,
+          ),
         ),
+        backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SafeArea(
         child: FutureBuilder(
@@ -105,7 +102,7 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              "${currentAnime.title} (${currentAnime.releaseDate})",
+                              currentAnime.title,
                               style: const TextStyle(
                                 fontStyle: FontStyle.italic,
                                 fontWeight: FontWeight.bold,

@@ -1,6 +1,7 @@
 import 'package:better_player/better_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class BetterVideoPlayer extends StatefulWidget {
   final String url;
@@ -38,6 +39,9 @@ class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
                   child: Text(errorText.toString()),
                 );
               },
+              deviceOrientationsAfterFullScreen: [
+                DeviceOrientation.portraitUp,
+              ],
               controlsConfiguration: const BetterPlayerControlsConfiguration(
                 enablePip: false,
                 playIcon: CupertinoIcons.play_circle,

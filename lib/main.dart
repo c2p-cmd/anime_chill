@@ -13,32 +13,39 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "Anime Chill app",
-      theme: ThemeData(
-        brightness: Brightness.dark,
-        primaryColor: Colors.deepPurpleAccent,
-        scaffoldBackgroundColor: const Color(0xff131313),
-      ),
-      home: CupertinoTabScaffold(
-        tabBar: CupertinoTabBar(
-          items: const [
-            BottomNavigationBarItem(
-                icon: Icon(CupertinoIcons.house),
-            ),
-            BottomNavigationBarItem(
-              icon: Icon(CupertinoIcons.search_circle),
-            ),
-          ],
+        title: "Anime Chill app",
+        theme: ThemeData(
+          cupertinoOverrideTheme: const CupertinoThemeData(
+            primaryColor: Colors.deepPurpleAccent,
+          ),
+          brightness: Brightness.dark,
+          primaryColor: Colors.deepPurpleAccent,
+          scaffoldBackgroundColor: const Color(0xff131313),
+          useMaterial3: true,
+          primaryColorDark: Colors.deepPurpleAccent,
+          progressIndicatorTheme: const ProgressIndicatorThemeData(
+            color: Colors.deepPurpleAccent,
+          ),
         ),
-        tabBuilder: (BuildContext context, int index) {
-          switch (index) {
-            case 0:
-              return const PopularAnimePage();
-            default:
-              return const SearchPage();
-          }
-        },
-      )
-    );
+        home: CupertinoTabScaffold(
+          tabBar: CupertinoTabBar(
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.house),
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(CupertinoIcons.search_circle),
+              ),
+            ],
+          ),
+          tabBuilder: (BuildContext context, int index) {
+            switch (index) {
+              case 0:
+                return const PopularAnimePage();
+              default:
+                return const SearchPage();
+            }
+          },
+        ));
   }
 }

@@ -33,19 +33,6 @@ class _SearchPageState extends State<SearchPage> {
     navigatorState = Navigator.of(context);
     scaffoldMessengerState = ScaffoldMessenger.of(context);
     return Scaffold(
-      appBar: AppBar(
-        title:  DropdownButton(
-          value: defaultBaseUrl,
-          items: urlWidgets,
-          onChanged: (value) {
-            if (value != null) {
-              setState(() {
-                defaultBaseUrl = value;
-              });
-            }
-          },
-        ),
-      ),
       body: Stack(children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -72,7 +59,7 @@ class _SearchPageState extends State<SearchPage> {
                   final animeToSearch = controller.text;
                   try {
                     final response = await http.get(
-                      searchAnime(animeToSearch, defaultBaseUrl),
+                      searchAnime(animeToSearch),
                       headers: {
                         'Content-type': 'application/json; charset=utf-8'
                       },
@@ -84,7 +71,7 @@ class _SearchPageState extends State<SearchPage> {
 
                     if (response.statusCode == 200) {
                       final List<dynamic> jsonDecoded =
-                          jsonDecode(utf8.decode(response.bodyBytes));
+                          jsonDecode(utf8.decode(response.bodyBytes))['results'];
                       final List<AnimeSearchResult> animeList = List.from(
                           jsonDecoded
                               .map((e) => AnimeSearchResult.fromJson(e)));

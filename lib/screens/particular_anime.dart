@@ -22,7 +22,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
   Future<AnimeInfo> fetchAnime() async {
     try {
       final id = widget.animeId;
-      final response = await http.get(animeDetails(id, defaultBaseUrl));
+      final response = await http.get(animeDetails(id));
       if (response.statusCode != 200) {
         throw Exception(response.reasonPhrase.toString());
       }
@@ -113,7 +113,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                   textAlign: TextAlign.left,
                 ),
               ];
-              final episodes = animeInfo.episodesList.reversed.toList();
+              final episodes = animeInfo.episodesList.toList();
               children.addAll(
                 List.generate(
                   animeInfo.episodesList.length,
@@ -136,11 +136,8 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                           context: context,
                           builder: (ctx) {
                             return Dialog(
-                              child: SizedBox(
-                                height: 100,
-                                child: AnimeWatchScreen(
-                                  animeEpisodeId: episodes[index].id,
-                                ),
+                              child: AnimeWatchCard(
+                                animeEpisodeId: episodes[index].id,
                               ),
                             );
                           },

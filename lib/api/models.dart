@@ -1,21 +1,20 @@
 class AnimePopular {
-  final String id, title, url, img, releaseDate;
+  final String id, title, url, img;
 
-  AnimePopular(this.id, this.title, this.url, this.img, this.releaseDate);
+  AnimePopular(this.id, this.title, this.url, this.img);
 
   factory AnimePopular.fromJson(Map<String, dynamic> json) {
     return AnimePopular(
-      json['animeId'],
-      json['animeTitle'],
-      json['animeUrl'],
-      json['animeImg'],
-      json['releasedDate'].toString(),
+      json['id'],
+      json['title'],
+      json['url'],
+      json['image'],
     );
   }
 
   @override
   String toString() {
-    return 'AnimePopular{id: $id, title: $title, releaseDate: $releaseDate}';
+    return 'AnimePopular{id: $id, title: $title}';
   }
 
   @override
@@ -24,11 +23,10 @@ class AnimePopular {
       other is AnimePopular &&
           runtimeType == other.runtimeType &&
           id == other.id &&
-          title == other.title &&
-          releaseDate == other.releaseDate;
+          title == other.title;
 
   @override
-  int get hashCode => id.hashCode ^ title.hashCode ^ releaseDate.hashCode;
+  int get hashCode => id.hashCode ^ title.hashCode;
 }
 
 class AnimeSearchResult {
@@ -38,11 +36,11 @@ class AnimeSearchResult {
 
   factory AnimeSearchResult.fromJson(Map<String, dynamic> json) {
     return AnimeSearchResult(
-      json['animeId'],
-      json['animeTitle'],
-      json['animeUrl'],
-      json['animeImg'],
-      json['status'],
+      json['id'],
+      json['title'],
+      json['url'],
+      json['image'],
+      json['subOrDub'],
     );
   }
 
@@ -69,7 +67,7 @@ class Episode {
   Episode(this.id, this.num, this.url);
 
   factory Episode.fromJson(Map<String, dynamic> json) {
-    return Episode(json['episodeId'], json['episodeNum'], json['episodeUrl']);
+    return Episode(json['id'], json['number'].toString(), json['url']);
   }
 
   @override
@@ -115,19 +113,19 @@ class AnimeInfo {
 
   factory AnimeInfo.fromJson(Map<String, dynamic> json) {
     final episodesList = <Episode>[];
-    json['episodesList'].forEach((v) {
+    json['episodes'].forEach((v) {
       episodesList.add(Episode.fromJson(v));
     });
     return AnimeInfo(
-      animeTitle: json['animeTitle'],
-      type: json['type'],
-      releasedDate: json['releasedDate'],
+      animeTitle: json['title'],
+      type: json['type'].toString(),
+      releasedDate: json['releaseDate'],
       status: json['status'],
       genres: json['genres'].cast<String>(),
-      otherNames: json['otherNames'],
-      synopsis: json['synopsis'],
-      animeImg: json['animeImg'],
-      totalEpisodes: json['totalEpisodes'],
+      otherNames: json['otherName'],
+      synopsis: json['description'],
+      animeImg: json['image'],
+      totalEpisodes: json['totalEpisodes'].toString(),
       episodesList: episodesList,
     );
   }
@@ -152,10 +150,9 @@ class AnimeInfo {
 }
 
 class EpisodeLinks {
-  final String referer;
   final List<EpisodeLinkSources> sources;
 
-  EpisodeLinks(this.referer, this.sources);
+  EpisodeLinks(this.sources);
 
   factory EpisodeLinks.fromJson(Map<String, dynamic> json) {
     final sources = <EpisodeLinkSources>[];
@@ -169,26 +166,26 @@ class EpisodeLinks {
         sources.add(EpisodeLinkSources.fromJson(element));
       }
     }
-    return EpisodeLinks(json['Referer'], sources);
+    return EpisodeLinks(sources);
   }
 
   @override
   String toString() {
-    return 'EpisodeLinks{referer: $referer, sources: $sources}';
+    return 'EpisodeLinks{sources: $sources}';
   }
 }
 
 class EpisodeLinkSources {
-  final String file, label, type;
+  final String url, quality;
 
-  EpisodeLinkSources(this.file, this.label, this.type);
+  EpisodeLinkSources(this.url, this.quality);
 
   factory EpisodeLinkSources.fromJson(Map<String, dynamic> json) {
-    return EpisodeLinkSources(json['file'], json['label'], json['type']);
+    return EpisodeLinkSources(json['url'], json['quality']);
   }
 
   @override
   String toString() {
-    return 'EpisodeLinkSources{file: $file, label: $label, type: $type}';
+    return 'EpisodeLinkSources{url: $url, quality: $quality';
   }
 }
