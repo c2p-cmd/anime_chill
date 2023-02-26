@@ -7,14 +7,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class SearchPage extends StatefulWidget {
+  const SearchPage({Key? key}) : super(key: key);
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<SearchPage> createState() => _SearchPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _SearchPageState extends State<SearchPage> {
   final controller = TextEditingController();
 
   var isLoading = false;
@@ -33,6 +33,19 @@ class _HomePageState extends State<HomePage> {
     navigatorState = Navigator.of(context);
     scaffoldMessengerState = ScaffoldMessenger.of(context);
     return Scaffold(
+      appBar: AppBar(
+        title:  DropdownButton(
+          value: defaultBaseUrl,
+          items: urlWidgets,
+          onChanged: (value) {
+            if (value != null) {
+              setState(() {
+                defaultBaseUrl = value;
+              });
+            }
+          },
+        ),
+      ),
       body: Stack(children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -43,6 +56,9 @@ class _HomePageState extends State<HomePage> {
               CupertinoTextField(
                 controller: controller,
                 placeholder: "Enter anime to search for.",
+                style: const TextStyle(
+                  color: Colors.white,
+                ),
               ),
               if (isLoading)
                 const Center(
@@ -56,7 +72,7 @@ class _HomePageState extends State<HomePage> {
                   final animeToSearch = controller.text;
                   try {
                     final response = await http.get(
-                      searchAnime(animeToSearch),
+                      searchAnime(animeToSearch, defaultBaseUrl),
                       headers: {
                         'Content-type': 'application/json; charset=utf-8'
                       },
@@ -80,14 +96,24 @@ class _HomePageState extends State<HomePage> {
                     } else {
                       scaffoldMessengerState.showSnackBar(
                         SnackBar(
-                          content: Text(response.reasonPhrase.toString()),
+                          content: Text(
+                            response.reasonPhrase.toString(),
+                            style: const TextStyle(
+                              color: Colors.black26,
+                            ),
+                          ),
                         ),
                       );
                     }
                   } catch (e) {
                     scaffoldMessengerState.showSnackBar(
                       SnackBar(
-                        content: Text(e.toString()),
+                        content: Text(
+                          e.toString(),
+                          style: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                        ),
                       ),
                     );
                   }

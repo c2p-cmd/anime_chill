@@ -1,3 +1,36 @@
+class AnimePopular {
+  final String id, title, url, img, releaseDate;
+
+  AnimePopular(this.id, this.title, this.url, this.img, this.releaseDate);
+
+  factory AnimePopular.fromJson(Map<String, dynamic> json) {
+    return AnimePopular(
+      json['animeId'],
+      json['animeTitle'],
+      json['animeUrl'],
+      json['animeImg'],
+      json['releasedDate'].toString(),
+    );
+  }
+
+  @override
+  String toString() {
+    return 'AnimePopular{id: $id, title: $title, releaseDate: $releaseDate}';
+  }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is AnimePopular &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          releaseDate == other.releaseDate;
+
+  @override
+  int get hashCode => id.hashCode ^ title.hashCode ^ releaseDate.hashCode;
+}
+
 class AnimeSearchResult {
   final String id, title, url, img, status;
 
