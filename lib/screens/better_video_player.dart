@@ -28,34 +28,30 @@ class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
         backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SafeArea(
-        child: AspectRatio(
-          aspectRatio: 16.0 / 9.0,
-          child: BetterPlayer.network(
-            widget.url,
-            betterPlayerConfiguration: BetterPlayerConfiguration(
-              allowedScreenSleep: false,
-              errorBuilder: (ctx, errorText) {
-                return Center(
-                  child: Text(errorText.toString()),
-                );
-              },
-              deviceOrientationsAfterFullScreen: [
-                DeviceOrientation.portraitUp,
-              ],
-              controlsConfiguration: const BetterPlayerControlsConfiguration(
-                enablePip: false,
-                playIcon: CupertinoIcons.play_circle,
-                pauseIcon: CupertinoIcons.pause_circle,
-                skipForwardIcon: CupertinoIcons.forward_end,
-                skipBackIcon: CupertinoIcons.backward_end,
-                fullscreenEnableIcon: CupertinoIcons.fullscreen,
-                fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
-                muteIcon: CupertinoIcons.volume_up,
-                unMuteIcon: CupertinoIcons.volume_off,
-                loadingWidget: CupertinoActivityIndicator(
-                  radius: 18,
-                  color: Colors.purpleAccent,
-                ),
+        child: BetterPlayer.network(
+          widget.url,
+          betterPlayerConfiguration: BetterPlayerConfiguration(
+            fit: BoxFit.contain,
+            allowedScreenSleep: false,
+            errorBuilder: (ctx, errorText) {
+              return Center(
+                child: Text(errorText.toString()),
+              );
+            },
+            deviceOrientationsAfterFullScreen: [
+              DeviceOrientation.portraitUp,
+            ],
+            controlsConfiguration: const BetterPlayerControlsConfiguration(
+              enablePip: false,
+              playIcon: CupertinoIcons.play_circle,
+              pauseIcon: CupertinoIcons.pause_circle,
+              fullscreenEnableIcon: CupertinoIcons.fullscreen,
+              fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
+              muteIcon: CupertinoIcons.volume_up,
+              unMuteIcon: CupertinoIcons.volume_off,
+              loadingWidget: CupertinoActivityIndicator(
+                radius: 18,
+                color: Colors.purpleAccent,
               ),
             ),
           ),

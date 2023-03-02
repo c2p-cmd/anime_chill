@@ -70,8 +70,8 @@ class _SearchPageState extends State<SearchPage> {
                     });
 
                     if (response.statusCode == 200) {
-                      final List<dynamic> jsonDecoded =
-                          jsonDecode(utf8.decode(response.bodyBytes))['results'];
+                      final List<dynamic> jsonDecoded = jsonDecode(
+                          utf8.decode(response.bodyBytes))['results'];
                       final List<AnimeSearchResult> animeList = List.from(
                           jsonDecoded
                               .map((e) => AnimeSearchResult.fromJson(e)));
