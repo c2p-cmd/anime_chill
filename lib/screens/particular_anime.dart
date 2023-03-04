@@ -155,7 +155,12 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                 child: Text(snapshot.error.toString()),
               );
             }
-            return const Center(child: LinearProgressIndicator());
+            return Center(
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width * 0.75,
+                child: const LinearProgressIndicator(),
+              ),
+            );
           },
         ),
       ),
