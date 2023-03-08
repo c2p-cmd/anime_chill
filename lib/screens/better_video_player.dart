@@ -15,8 +15,43 @@ class BetterVideoPlayer extends StatefulWidget {
 }
 
 class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
+  final focusNode = FocusNode();
+  final player = BetterPlayerController(
+    BetterPlayerConfiguration(
+      fit: BoxFit.contain,
+      allowedScreenSleep: false,
+      errorBuilder: (ctx, errorText) {
+        return Center(
+          child: Text(errorText.toString()),
+        );
+      },
+      deviceOrientationsAfterFullScreen: [
+        DeviceOrientation.portraitUp,
+      ],
+      controlsConfiguration: const BetterPlayerControlsConfiguration(
+        enablePip: false,
+        playIcon: CupertinoIcons.play_circle,
+        pauseIcon: CupertinoIcons.pause_circle,
+        fullscreenEnableIcon: CupertinoIcons.fullscreen,
+        fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
+        muteIcon: CupertinoIcons.volume_up,
+        unMuteIcon: CupertinoIcons.volume_off,
+        loadingWidget: CupertinoActivityIndicator(
+          radius: 18,
+          color: Colors.purpleAccent,
+        ),
+      ),
+    ),
+  );
+
   @override
   void initState() {
+    player.setupDataSource(
+      BetterPlayerDataSource(
+        BetterPlayerDataSourceType.network,
+        widget.url,
+      ),
+    );
     super.initState();
   }
 
@@ -28,33 +63,8 @@ class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
         backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SafeArea(
-        child: BetterPlayer.network(
-          widget.url,
-          betterPlayerConfiguration: BetterPlayerConfiguration(
-            fit: BoxFit.contain,
-            allowedScreenSleep: false,
-            errorBuilder: (ctx, errorText) {
-              return Center(
-                child: Text(errorText.toString()),
-              );
-            },
-            deviceOrientationsAfterFullScreen: [
-              DeviceOrientation.portraitUp,
-            ],
-            controlsConfiguration: const BetterPlayerControlsConfiguration(
-              enablePip: false,
-              playIcon: CupertinoIcons.play_circle,
-              pauseIcon: CupertinoIcons.pause_circle,
-              fullscreenEnableIcon: CupertinoIcons.fullscreen,
-              fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
-              muteIcon: CupertinoIcons.volume_up,
-              unMuteIcon: CupertinoIcons.volume_off,
-              loadingWidget: CupertinoActivityIndicator(
-                radius: 18,
-                color: Colors.purpleAccent,
-              ),
-            ),
-          ),
+        child: BetterPlayer(
+          controller: player,
         ),
       ),
     );
