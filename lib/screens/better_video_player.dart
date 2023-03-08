@@ -1,4 +1,4 @@
-import 'package:better_player/better_player.dart';
+import 'package:appinio_video_player/appinio_video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -15,44 +15,41 @@ class BetterVideoPlayer extends StatefulWidget {
 }
 
 class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
-  final focusNode = FocusNode();
-  final player = BetterPlayerController(
-    BetterPlayerConfiguration(
-      fit: BoxFit.contain,
-      allowedScreenSleep: false,
-      errorBuilder: (ctx, errorText) {
-        return Center(
-          child: Text(errorText.toString()),
-        );
-      },
-      deviceOrientationsAfterFullScreen: [
-        DeviceOrientation.portraitUp,
-      ],
-      controlsConfiguration: const BetterPlayerControlsConfiguration(
-        enablePip: false,
-        playIcon: CupertinoIcons.play_circle,
-        pauseIcon: CupertinoIcons.pause_circle,
-        fullscreenEnableIcon: CupertinoIcons.fullscreen,
-        fullscreenDisableIcon: CupertinoIcons.fullscreen_exit,
-        muteIcon: CupertinoIcons.volume_up,
-        unMuteIcon: CupertinoIcons.volume_off,
-        loadingWidget: CupertinoActivityIndicator(
-          radius: 18,
-          color: Colors.purpleAccent,
-        ),
-      ),
-    ),
-  );
+  late VideoPlayerController player;
+  late CustomVideoPlayerController customVideoPlayerController;
 
   @override
   void initState() {
-    player.setupDataSource(
-      BetterPlayerDataSource(
-        BetterPlayerDataSourceType.network,
-        widget.url,
+    player = VideoPlayerController.network(widget.url)
+      ..setVolume(1.0)
+      ..initialize().then((value) {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    customVideoPlayerController = CustomVideoPlayerController(
+      context: context,
+      videoPlayerController: player,
+      customVideoPlayerSettings: const CustomVideoPlayerSettings(
+        placeholderWidget: CupertinoActivityIndicator(),
+        deviceOrientationsAfterFullscreen: [
+          DeviceOrientation.portraitUp,
+        ],
+        alwaysShowThumbnailOnVideoPaused: true,
+        customVideoPlayerProgressBarSettings:
+            CustomVideoPlayerProgressBarSettings(
+          progressColor: Colors.deepPurpleAccent,
+          bufferedColor: Color(0x5A7C4DFF),
+        ),
       ),
     );
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    customVideoPlayerController.dispose();
+    super.dispose();
   }
 
   @override
@@ -63,8 +60,8 @@ class _BetterVideoPlayerState extends State<BetterVideoPlayer> {
         backgroundColor: Colors.deepPurpleAccent,
       ),
       body: SafeArea(
-        child: BetterPlayer(
-          controller: player,
+        child: CustomVideoPlayer(
+          customVideoPlayerController: customVideoPlayerController,
         ),
       ),
     );
