@@ -1,20 +1,26 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_playout (0.0.1):
+    - Flutter
   - video_player_avfoundation (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_playout (from `.symlinks/plugins/flutter_playout/ios`)
   - video_player_avfoundation (from `.symlinks/plugins/video_player_avfoundation/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_playout:
+    :path: ".symlinks/plugins/flutter_playout/ios"
   video_player_avfoundation:
     :path: ".symlinks/plugins/video_player_avfoundation/ios"
 
 SPEC CHECKSUMS:
   Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
+  flutter_playout: a5aed32b3003b02eb4432815ecfe0c0e42a801ff
   video_player_avfoundation: 81e49bb3d9fb63dccf9fa0f6d877dc3ddbeac126
 
 PODFILE CHECKSUM: 7368163408c647b7eb699d0d788ba6718e18fb8d
