@@ -138,6 +138,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                             return Dialog(
                               child: AnimeWatchCard(
                                 animeEpisodeId: episodes[index].id,
+                                animeInfo: animeInfo,
                               ),
                             );
                           },

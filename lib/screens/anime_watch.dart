@@ -9,9 +9,10 @@ import 'package:http/http.dart' as http;
 
 class AnimeWatchCard extends StatelessWidget {
   final String animeEpisodeId;
+  final AnimeInfo animeInfo;
   const AnimeWatchCard({
     Key? key,
-    required this.animeEpisodeId,
+    required this.animeEpisodeId, required this.animeInfo,
   }) : super(key: key);
 
   Future<EpisodeLinks> getSources() async {
@@ -86,6 +87,7 @@ class AnimeWatchCard extends StatelessWidget {
                         builder: (_) {
                           return BetterVideoPlayer(
                             url: episodeLinks.sources[i].url,
+                            title: animeInfo.animeTitle,
                           );
                         },
                       ),
