@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:html';
 
 import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/api/secret.dart';
