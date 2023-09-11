@@ -39,6 +39,8 @@ dependencies:
   http: ^0.13.5
   appinio_video_player: ^1.2.0
   flutter_playout: ^2.0.1
+  video_player: ^2.7.1
+  chewie: ^1.7.1
 
 dev_dependencies:
   flutter_test:

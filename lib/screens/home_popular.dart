@@ -89,15 +89,19 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
                         child: Column(
                           children: [
                             Expanded(
-                              child: Container(
-                                alignment: Alignment.center,
-                                height: 500,
-                                decoration: BoxDecoration(
-                                    image: DecorationImage(
-                                      fit: BoxFit.fill,
-                                      image: NetworkImage(currentAnime.img),
-                                    ),
-                                    borderRadius: BorderRadius.circular(7)),
+                              child: Image.network(
+                                currentAnime.img,
+                                fit: BoxFit.fill,
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) {
+                                    return child;
+                                  }
+                                  return CircularProgressIndicator(
+                                    value:
+                                        loadingProgress.cumulativeBytesLoaded.toDouble(),
+                                  );
+                                },
                               ),
                             ),
                             const SizedBox(height: 8),
