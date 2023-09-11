@@ -1,8 +1,16 @@
+import 'dart:js' as js;
+
 import 'package:chewie/chewie.dart';
 import 'package:flutter/services.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
+extension ColorString on Color {
+  String toHexString() {
+    return '#${(value & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}';
+  }
+}
 
 class WebVideoPlayer extends StatefulWidget {
   final String url, title;
@@ -19,9 +27,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
   @override
   void initState() {
     super.initState();
-    SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
-    );
+    js.context.callMethod("setMetaThemeColor", [Colors.black.toHexString()]);
     _controller = VideoPlayerController.networkUrl(
       Uri.parse(widget.url),
     )..initialize().then((_) {
@@ -46,24 +52,28 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CupertinoNavigationBar(
-        leading: BackButton(),
-      ),
-      body: Center(
-        child: _controller.value.isInitialized
-            ? AspectRatio(
-                aspectRatio: _controller.value.aspectRatio,
-                child: Chewie(controller: _chewieController),
-              )
-            : Row(
-                children: [
-                  Text(
-                    "Loading... ${_controller.value.hasError ? _controller.value.errorDescription.toString() : ""}",
-                  ),
-                  const CupertinoActivityIndicator()
-                ],
-              ),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(statusBarColor: Colors.black),
+      child: Scaffold(
+        appBar: const CupertinoNavigationBar(
+          backgroundColor: Colors.black,
+          leading: BackButton(),
+        ),
+        body: Center(
+          child: _controller.value.isInitialized
+              ? AspectRatio(
+                  aspectRatio: _controller.value.aspectRatio,
+                  child: Chewie(controller: _chewieController),
+                )
+              : Row(
+                  children: [
+                    Text(
+                      "Loading... ${_controller.value.hasError ? _controller.value.errorDescription.toString() : ""}",
+                    ),
+                    const CupertinoActivityIndicator()
+                  ],
+                ),
+        ),
       ),
     );
   }

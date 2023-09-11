@@ -40,6 +40,7 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js
@@ -53,6 +54,11 @@
         return appRunner.runApp();
       });
     });
+  </script>
+  <script>
+    function setMetaThemeColor(color) {
+      document.querySelector('meta[name="theme-color"]').setAttribute("content", color);
+    }
   </script>
 </body>
 </html>
