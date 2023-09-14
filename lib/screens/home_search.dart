@@ -35,6 +35,8 @@ class _SearchPageState extends State<SearchPage> {
 
   @override
   Widget build(BuildContext context) {
+    final width = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
@@ -55,6 +57,8 @@ class _SearchPageState extends State<SearchPage> {
               ),
             CupertinoButton.filled(
               onPressed: () async {
+                if (isLoading) return;
+
                 setState(() {
                   isLoading = true;
                 });
@@ -108,12 +112,17 @@ class _SearchPageState extends State<SearchPage> {
                   );
                 }
               },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  Text("Search"),
-                  Icon(CupertinoIcons.arrow_right_circle)
-                ],
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: width * 0.5
+                ),
+                child: const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text("Search"),
+                    Icon(CupertinoIcons.arrow_right_circle)
+                  ],
+                ),
               ),
             ),
           ],

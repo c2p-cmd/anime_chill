@@ -17,8 +17,9 @@ class AnimeWatchCard extends StatelessWidget {
 
   Future<EpisodeLinks> getSources() async {
     try {
-      final response =
-          await http.get(animeEpisodes(animeEpisodeId, defaultBaseUrl));
+      final response = await http.get(
+        animeEpisodes(animeEpisodeId, defaultBaseUrl),
+      );
 
       if (response.statusCode != 200) {
         throw Exception(response.reasonPhrase.toString());
@@ -33,6 +34,7 @@ class AnimeWatchCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      semanticContainer: false,
       child: FutureBuilder(
         future: getSources(),
         builder: (context, snapshot) {
