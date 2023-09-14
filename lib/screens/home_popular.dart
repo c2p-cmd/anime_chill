@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:anime_chill/api/secret.dart';
-import 'package:anime_chill/screens/particular_anime.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -75,13 +74,10 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
                     final currentAnime = animeResults[index];
                     return InkWell(
                       onTap: () {
-                        Navigator.push(
+                        Navigator.pushNamed(
                           context,
-                          MaterialPageRoute(
-                            builder: (ctx) => AnimeInfoScreen(
-                              animeId: currentAnime.id,
-                            ),
-                          ),
+                          "/anime_info",
+                          arguments: currentAnime.id,
                         );
                       },
                       child: Padding(
@@ -98,8 +94,8 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
                                     return child;
                                   }
                                   return CircularProgressIndicator(
-                                    value:
-                                        loadingProgress.cumulativeBytesLoaded.toDouble(),
+                                    value: loadingProgress.cumulativeBytesLoaded
+                                        .toDouble(),
                                   );
                                 },
                               ),

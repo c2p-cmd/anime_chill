@@ -1,5 +1,4 @@
 import 'package:anime_chill/api/models.dart';
-import 'package:anime_chill/screens/particular_anime.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -42,13 +41,10 @@ class AnimeListScreen extends StatelessWidget {
                     color: Colors.purpleAccent,
                   ),
                   onTap: () {
-                    Navigator.push(
+                    Navigator.pushNamed(
                       context,
-                      MaterialPageRoute(
-                        builder: (ctx) => AnimeInfoScreen(
-                          animeId: animeSearchResult.id,
-                        ),
-                      ),
+                      "/anime_info",
+                      arguments: animeSearchResult.id,
                     );
                   },
                 );
