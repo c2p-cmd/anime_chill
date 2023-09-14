@@ -55,7 +55,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                 Container(
                   decoration: BoxDecoration(
                     image: DecorationImage(
-                      fit: BoxFit.fill,
+                      fit: BoxFit.fitHeight,
                       filterQuality: FilterQuality.high,
                       image: NetworkImage(animeInfo.animeImg),
                     ),
@@ -73,34 +73,30 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
+                Text(
+                  "Status: ${animeInfo.status},",
+                  style: const TextStyle(
+                    color: Colors.amberAccent,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Text(
+                  "Type: ${animeInfo.type},",
+                  style: const TextStyle(
+                    color: Colors.amberAccent,
+                    fontSize: 18,
+                  ),
+                ),
+                const SizedBox(width: 10),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: [
-                      Text(
-                        "Status: ${animeInfo.status},",
-                        style: const TextStyle(
-                          color: Colors.amberAccent,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "Type: ${animeInfo.type},",
-                        style: const TextStyle(
-                          color: Colors.amberAccent,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Text(
-                        "OtherName: ${animeInfo.otherNames}",
-                        style: const TextStyle(
-                          color: Colors.amberAccent,
-                          fontSize: 18,
-                        ),
-                      ),
-                    ],
+                  child: Text(
+                    "OtherNames: ${animeInfo.otherNames}",
+                    style: const TextStyle(
+                      color: Colors.amberAccent,
+                      fontSize: 18,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 10),

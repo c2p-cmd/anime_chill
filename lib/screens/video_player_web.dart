@@ -1,3 +1,4 @@
+import 'dart:html';
 import 'dart:js' as js;
 
 import 'package:chewie/chewie.dart';
@@ -35,9 +36,27 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
           _chewieController = ChewieController(
             videoPlayerController: _controller,
             autoPlay: true,
-            allowFullScreen: true,
+            allowFullScreen: false,
             allowPlaybackSpeedChanging: true,
             allowedScreenSleep: false,
+            additionalOptions: (BuildContext context) {
+              return [
+                if (document.fullscreenElement == null) OptionItem(
+                  onTap: () {
+                    document.documentElement?.requestFullscreen();
+                  },
+                  iconData: Icons.fullscreen,
+                  title: "Enter Fullscreen",
+                ),
+                if (document.fullscreenElement != null) OptionItem(
+                  onTap: () {
+                    document.exitFullscreen();
+                  },
+                  iconData: Icons.fullscreen_exit,
+                  title: "Exit Fullscreen",
+                ),
+              ];
+            },
           );
         });
       });
@@ -56,7 +75,6 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
       value: const SystemUiOverlayStyle(statusBarColor: Colors.black),
       child: Scaffold(
         appBar: const CupertinoNavigationBar(
-          backgroundColor: Colors.black,
           leading: BackButton(),
         ),
         body: Center(
