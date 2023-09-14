@@ -1,16 +1,6 @@
 # anime_chill
 
-Anime Chill app
+## Anime Chill app & web app using Flutter
 
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+The Application supports running on iOS as well as on web
+The website is hosted on [GitHub Pages](https://c2p-cmd.github.io/anime_chill_web/)
