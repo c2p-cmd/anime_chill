@@ -36,7 +36,7 @@ class _WebVideoPlayerState extends State<WebVideoPlayer> {
           _chewieController = ChewieController(
             videoPlayerController: _controller,
             autoPlay: true,
-            allowFullScreen: false,
+            allowFullScreen: true,
             allowPlaybackSpeedChanging: true,
             allowedScreenSleep: false,
             additionalOptions: (BuildContext context) {
