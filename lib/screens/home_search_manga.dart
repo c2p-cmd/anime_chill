@@ -6,14 +6,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+class MangaSearchPage extends StatefulWidget {
+  const MangaSearchPage({Key? key}) : super(key: key);
 
   @override
-  State<SearchPage> createState() => _SearchPageState();
+  State<MangaSearchPage> createState() => _MangaSearchPageState();
 }
 
-class _SearchPageState extends State<SearchPage> {
+class _MangaSearchPageState extends State<MangaSearchPage> {
   final controller = TextEditingController();
 
   var isLoading = false;
@@ -45,13 +45,13 @@ class _SearchPageState extends State<SearchPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              "assets/anime-img.png",
+              "assets/manga-img.png",
               height: 200,
               fit: BoxFit.fitHeight,
             ),
             CupertinoTextField(
               controller: controller,
-              placeholder: "Enter anime to search for.",
+              placeholder: "Enter a manga to search for.",
               style: const TextStyle(
                 color: Colors.white,
               ),
@@ -61,17 +61,17 @@ class _SearchPageState extends State<SearchPage> {
               const Center(
                 child: LinearProgressIndicator(),
               ),
-            CupertinoButton.filled(
+            CupertinoButton(
               onPressed: () async {
                 if (isLoading) return;
 
                 setState(() {
                   isLoading = true;
                 });
-                final animeToSearch = controller.text;
+                final mangaToSearch = controller.text;
                 try {
                   final response = await http.get(
-                    searchAnime(animeToSearch),
+                    mangaDexSearch(mangaToSearch),
                     headers: {
                       'Content-type': 'application/json; charset=utf-8'
                     },
@@ -82,16 +82,17 @@ class _SearchPageState extends State<SearchPage> {
                   });
 
                   if (response.statusCode == 200) {
+                    final responseBody = utf8.decode(response.bodyBytes);
                     final List<dynamic> jsonDecoded = jsonDecode(
-                      utf8.decode(response.bodyBytes),
+                      responseBody,
                     )['results'];
-                    final List<AnimeSearchResult> animeList = List.from(
-                      jsonDecoded.map((e) => AnimeSearchResult.fromJson(e)),
+                    final List<MangaSearchElement> mangaList = List.from(
+                      jsonDecoded.map((e) => MangaSearchElement.fromJson(e)),
                     );
 
                     navigatorState.pushNamed(
-                      "/anime_list_screen",
-                      arguments: animeList,
+                      "/manga_list_screen",
+                      arguments: mangaList,
                     );
                   } else {
                     scaffoldMessengerState.showSnackBar(
@@ -119,9 +120,7 @@ class _SearchPageState extends State<SearchPage> {
                 }
               },
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: width * 0.5
-                ),
+                constraints: BoxConstraints(maxWidth: width * 0.5),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [

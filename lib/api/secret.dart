@@ -14,4 +14,10 @@ Uri animeEpisodes(String episodeId, [String baseUrl = gogoAnime]) =>
 
 Uri popularAnime([String baseUrl = gogoAnime]) => Uri.parse('$baseUrl/top-airing');
 
+Uri mangaDexSearch(String arguments) => Uri.parse("https://api.consumet.org/manga/mangadex/$arguments");
+
+Uri mangaDexGetInfo(String mangaId) => Uri.parse("https://api.consumet.org/manga/mangadex/info/$mangaId");
+
+Uri mangaDexRead(String chapterId) => Uri.parse("https://api.consumet.org/manga/mangadex/read/$chapterId");
+
 String defaultBaseUrl = gogoAnime;

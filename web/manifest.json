@@ -1,11 +1,11 @@
 {
-    "name": "anime_chill",
+    "name": "Anime Chill Web",
     "short_name": "anime_chill",
     "start_url": ".",
     "display": "standalone",
-    "background_color": "#0175C2",
+    "background_color": "#0a0a0a",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "One Place to watch anime",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [
