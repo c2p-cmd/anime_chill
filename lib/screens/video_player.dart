@@ -28,6 +28,8 @@ class _AnimeVideoPlayerState extends State<AnimeVideoPlayer> {
   )..initialize().then(setChewie);
   late ChewieController _chewieController;
 
+  late final _scaffoldMessenger = ScaffoldMessenger.of(context);
+
   @override
   void dispose() {
     _chewieController.dispose();
@@ -72,11 +74,33 @@ class _AnimeVideoPlayerState extends State<AnimeVideoPlayer> {
         allowPlaybackSpeedChanging: true,
         allowedScreenSleep: false,
         additionalOptions: (BuildContext context) {
+          final copyButton = OptionItem(
+            onTap: () async {
+              _scaffoldMessenger.hideCurrentSnackBar();
+              final clipboardDate = ClipboardData(text: widget.url);
+              await Clipboard.setData(clipboardDate);
+              final snackBar = SnackBar(
+                duration: const Duration(seconds: 1),
+                content: const Text("Copied!"),
+                action: SnackBarAction(
+                  label: "Okay",
+                  onPressed: _scaffoldMessenger.hideCurrentSnackBar,
+                ),
+              );
+              _scaffoldMessenger.showSnackBar(snackBar);
+            },
+            iconData: Icons.content_copy_rounded,
+            title: "Copy link",
+          );
+
           if (kIsWeb == false) {
-            return [];
+            return [
+              copyButton,
+            ];
           }
 
           return [
+            copyButton,
             if (document.fullscreenElement == null)
               OptionItem(
                 onTap: () {
@@ -95,6 +119,13 @@ class _AnimeVideoPlayerState extends State<AnimeVideoPlayer> {
               ),
           ];
         },
+        deviceOrientationsOnEnterFullScreen: [
+          DeviceOrientation.landscapeLeft,
+          DeviceOrientation.landscapeRight,
+        ],
+        deviceOrientationsAfterFullScreen: [
+          DeviceOrientation.portraitUp,
+        ],
       );
     });
   }
