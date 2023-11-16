@@ -3,9 +3,12 @@ import 'dart:async';
 import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:universal_html/html.dart' show document;
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:video_player/video_player.dart';
-import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
+import 'package:flutter/cupertino.dart'
+    show CupertinoActivityIndicator, CupertinoIcons;
 import 'package:flutter/material.dart';
 
 extension ColorString on Color {
@@ -42,8 +45,45 @@ class _AnimeVideoPlayerState extends State<AnimeVideoPlayer> {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(statusBarColor: Colors.black),
       child: Scaffold(
-        floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-        floatingActionButton: const BackButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            const BackButton(),
+            IconButton(
+              onPressed: () async {
+                if (kIsWeb) {
+                  _scaffoldMessenger.hideCurrentSnackBar();
+                  final clipboardDate = ClipboardData(text: widget.url);
+                  await Clipboard.setData(clipboardDate);
+                  final snackBar = SnackBar(
+                    duration: const Duration(seconds: 1),
+                    content: const Text("Copied!"),
+                    action: SnackBarAction(
+                      label: "Okay",
+                      onPressed: _scaffoldMessenger.hideCurrentSnackBar,
+                    ),
+                  );
+                  _scaffoldMessenger.showSnackBar(snackBar);
+                  return;
+                }
+
+                Share.shareUri(Uri.parse(widget.url));
+              },
+              icon: const Icon(CupertinoIcons.share_up),
+            ),
+            IconButton(
+              onPressed: () {
+                launchUrlString(
+                  widget.url,
+                  mode: LaunchMode.inAppBrowserView,
+                  webOnlyWindowName: widget.title,
+                );
+              },
+              icon: const Icon(CupertinoIcons.compass_fill),
+            ),
+          ],
+        ),
         body: Center(
           child: _controller.value.isInitialized
               ? AspectRatio(

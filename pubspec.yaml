@@ -41,6 +41,8 @@ dependencies:
   chewie: ^1.7.1
   universal_html: ^2.2.4
   lottie: ^2.6.0
+  share_plus: ^7.2.1
+  url_launcher: ^6.2.1
 
 dev_dependencies:
   flutter_test:
