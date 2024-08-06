@@ -1,4 +1,4 @@
-const baseUrl = 'https://api.consumet.org/anime';
+const baseUrl = 'https://consumet-api-snowy.vercel.app/anime';
 const mine = 'https://webdis-z7xm.onrender.com';
 const gogoAnime = '$baseUrl/gogoanime';
 
