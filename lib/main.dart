@@ -132,6 +132,13 @@ class ErrorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        leading: BackButton(
+          onPressed: () {
+            Navigator.of(context).pushReplacementNamed("/");
+          }
+        ),
+      ),
       body: Center(
         child: LottieBuilder.asset(
           "assets/lottie/animation_lmoxm8mn.json",
