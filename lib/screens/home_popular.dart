@@ -70,6 +70,10 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
     return FutureBuilder(
       future: getPopularAnime(showAnime ? gogoAnime : flixhq),
       builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CupertinoActivityIndicator());
+        }
+
         if (snapshot.hasError) {
           return Center(
             child: Text(snapshot.error.toString()),
