@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:anime_chill/api/secret.dart';
+import 'package:anime_chill/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -69,11 +70,7 @@ class _PopularAnimePageState extends State<PopularAnimePage> {
                     final currentAnime = animeResults[index];
                     return InkWell(
                       onTap: () {
-                        Navigator.pushNamed(
-                          context,
-                          "/anime_info",
-                          arguments: currentAnime.id,
-                        );
+                        AppRoutes.router.navigateTo(context, "/anime_info/${currentAnime.id}");
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(5.0),

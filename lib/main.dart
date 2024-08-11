@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/screens/anime_list.dart';
 import 'package:anime_chill/screens/home_popular.dart';
@@ -8,10 +10,12 @@ import 'package:anime_chill/screens/manga_read_page.dart';
 import 'package:anime_chill/screens/particular_anime.dart';
 import 'package:anime_chill/screens/particular_manga.dart';
 import 'package:anime_chill/screens/video_player.dart';
+import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:lottie/lottie.dart';
+import 'package:url_strategy/url_strategy.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,7 +24,91 @@ void main() async {
     DeviceOrientation.landscapeRight,
     DeviceOrientation.landscapeLeft,
   ]);
+  AppRoutes.setupRouter();
+  setPathUrlStrategy();
   runApp(const App());
+}
+
+class AppRoutes {
+  static FluroRouter router = FluroRouter();
+
+  static void setupRouter() {
+    router.define(
+      '/',
+      handler: Handler(handlerFunc: (context, params) => const HomeWidget()),
+    );
+
+    router.define(
+      '/anime_list_screen',
+      handler: Handler(
+        type: HandlerType.function,
+        handlerFunc: (context, params) {
+          final arguments = context?.settings?.arguments;
+          if (arguments == null) return const ErrorPage();
+          final animeList = arguments as List<AnimeSearchResult>;
+          return AnimeListScreen(results: animeList);
+        },
+      ),
+    );
+
+    router.define(
+      '/manga_list_screen',
+      handler: Handler(handlerFunc: (context, params) {
+        final arguments = context?.settings?.arguments;
+        if (arguments == null) return const ErrorPage();
+        final mangaList = arguments as List<MangaSearchElement>;
+        return MangaListScreen(results: mangaList);
+      }),
+    );
+
+    router.define(
+      '/anime_info/:id',
+      handler: Handler(
+        handlerFunc: (context, params) {
+          debugPrint(context?.mounted.toString());
+          final animeId = params['id']?[0];
+          if (animeId == null) return const ErrorPage();
+          return AnimeInfoScreen(
+            animeId: animeId,
+            key: ValueKey(Random().nextInt(9999)),
+          );
+        },
+      ),
+    );
+
+    router.define(
+      '/manga_info/:id',
+      handler: Handler(handlerFunc: (context, params) {
+        final mangaId = params['id']?[0];
+        if (mangaId == null) return const ErrorPage();
+        return MangaInfoScreen(mangaId: mangaId);
+      }),
+    );
+
+    router.define(
+      '/manga_reader/:id',
+      handler: Handler(handlerFunc: (context, params) {
+        final chapterId = params['id']?[0];
+        if (chapterId == null) return const ErrorPage();
+        return MangaReadingPage(chapterID: chapterId);
+      }),
+    );
+
+    router.define(
+      '/video_player',
+      handler: Handler(
+        handlerFunc: (context, params) {
+          final url = params['url']?[0];
+          final title = params['title']?[0];
+          if (url == null || title == null) return const ErrorPage();
+          return AnimeVideoPlayer(
+            url: Uri.decodeComponent(url),
+            title: Uri.decodeComponent(title),
+          );
+        },
+      ),
+    );
+  }
 }
 
 class App extends StatelessWidget {
@@ -50,78 +138,8 @@ class App extends StatelessWidget {
           color: Colors.deepPurpleAccent,
         ),
       ),
-      routes: {
-        '/': (_) {
-          return const HomeWidget();
-        },
-        '/home': (_) {
-          return const HomeWidget();
-        },
-        '/anime_list_screen': (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          final arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-
-          final animeList = arguments as List<AnimeSearchResult>;
-          return AnimeListScreen(results: animeList);
-        },
-        '/manga_list_screen': (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          final arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-
-          final mangaList = arguments as List<MangaSearchElement>;
-          return MangaListScreen(results: mangaList);
-        },
-        '/anime_info': (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          final arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-
-          final animeId = arguments.toString();
-          return AnimeInfoScreen(animeId: animeId);
-        },
-        '/manga_info': (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          final arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-
-          final mangaId = arguments.toString();
-          return MangaInfoScreen(mangaId: mangaId);
-        },
-        "/manga_reader": (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          final arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-
-          return MangaReadingPage(
-            chapterID: arguments.toString(),
-          );
-        },
-        '/video_player': (context) {
-          final routeSettings = ModalRoute.of(context)?.settings;
-          var arguments = routeSettings?.arguments;
-          if (routeSettings == null || arguments == null) {
-            return const ErrorPage();
-          }
-          arguments = arguments as List<String>;
-
-          return AnimeVideoPlayer(
-            url: arguments[0],
-            title: arguments[1],
-          );
-        }
-      },
+      home: const HomeWidget(),
+      onGenerateRoute: AppRoutes.router.generator,
     );
   }
 }
@@ -135,8 +153,10 @@ class ErrorPage extends StatelessWidget {
       appBar: AppBar(
         leading: BackButton(
           onPressed: () {
-            Navigator.of(context).pushReplacementNamed("/");
-          }
+            Navigator.of(context).popUntil(
+              (route) => route.settings.name == "/",
+            );
+          },
         ),
       ),
       body: Center(

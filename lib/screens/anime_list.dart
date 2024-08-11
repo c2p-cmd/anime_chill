@@ -1,4 +1,5 @@
 import 'package:anime_chill/api/models.dart';
+import 'package:anime_chill/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -22,6 +23,7 @@ class AnimeListScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final animeSearchResult = results[i];
                 return ListTile(
+                  key: ValueKey('${animeSearchResult.id}-${DateTime.now().millisecondsSinceEpoch}'),
                   enableFeedback: true,
                   isThreeLine: true,
                   leading: CircleAvatar(
@@ -41,10 +43,9 @@ class AnimeListScreen extends StatelessWidget {
                     color: Colors.purpleAccent,
                   ),
                   onTap: () {
-                    Navigator.pushNamed(
+                    AppRoutes.router.navigateTo(
                       context,
-                      "/anime_info",
-                      arguments: animeSearchResult.id,
+                      "/anime_info/${animeSearchResult.id}",
                     );
                   },
                 );

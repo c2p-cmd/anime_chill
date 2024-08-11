@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/api/secret.dart';
+import 'package:anime_chill/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -83,13 +84,13 @@ class AnimeWatchCard extends StatelessWidget {
                     ),
                   ),
                   onPressed: () {
-                    Navigator.pushNamed(
+                    final encodedUrl =
+                        Uri.encodeComponent(episodeLinks.sources[i].url);
+                    final encodedTitle =
+                        Uri.encodeComponent(animeInfo.animeTitle);
+                    AppRoutes.router.navigateTo(
                       context,
-                      "/video_player",
-                      arguments: [
-                        episodeLinks.sources[i].url,
-                        animeInfo.animeTitle
-                      ],
+                      '/video_player?url=$encodedUrl&title=$encodedTitle',
                     );
                   },
                 );

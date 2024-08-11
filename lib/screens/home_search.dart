@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/api/secret.dart';
+import 'package:anime_chill/main.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -89,10 +90,16 @@ class _SearchPageState extends State<SearchPage> {
                       jsonDecoded.map((e) => AnimeSearchResult.fromJson(e)),
                     );
 
-                    navigatorState.pushNamed(
-                      "/anime_list_screen",
-                      arguments: animeList,
-                    );
+                    if (context.mounted) {
+                      AppRoutes.router.navigateTo(
+                        context,
+                        "/anime_list_screen",
+                        routeSettings: RouteSettings(
+                          name: "/anime_list_screen",
+                          arguments: animeList,
+                        ),
+                      );
+                    }
                   } else {
                     scaffoldMessengerState.showSnackBar(
                       SnackBar(
@@ -119,9 +126,7 @@ class _SearchPageState extends State<SearchPage> {
                 }
               },
               child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  maxWidth: width * 0.5
-                ),
+                constraints: BoxConstraints(maxWidth: width * 0.5),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
