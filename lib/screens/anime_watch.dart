@@ -7,19 +7,30 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AnimeWatchCard extends StatelessWidget {
+class AnimeWatchCard extends StatefulWidget {
   final String animeEpisodeId;
   final AnimeInfo animeInfo;
+  final bool showAnimeSearch;
   const AnimeWatchCard({
     Key? key,
     required this.animeEpisodeId,
     required this.animeInfo,
+    this.showAnimeSearch = true,
   }) : super(key: key);
 
+  @override
+  State<AnimeWatchCard> createState() => _AnimeWatchCardState();
+}
+
+class _AnimeWatchCardState extends State<AnimeWatchCard> {
   Future<EpisodeLinks> getSources() async {
     try {
       final response = await http.get(
-        animeEpisodes(animeEpisodeId, defaultBaseUrl),
+        animeEpisodes(
+          widget.animeEpisodeId,
+          baseUrl: widget.showAnimeSearch ? gogoAnime : flixhq,
+          mediaId: widget.animeInfo.id,
+        ),
       );
 
       if (response.statusCode != 200) {
@@ -87,7 +98,7 @@ class AnimeWatchCard extends StatelessWidget {
                     final encodedUrl =
                         Uri.encodeComponent(episodeLinks.sources[i].url);
                     final encodedTitle =
-                        Uri.encodeComponent(animeInfo.animeTitle);
+                        Uri.encodeComponent(widget.animeInfo.animeTitle);
                     AppRoutes.router.navigateTo(
                       context,
                       '/video_player?url=$encodedUrl&title=$encodedTitle',

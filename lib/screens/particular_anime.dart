@@ -7,22 +7,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class AnimeInfoScreen extends StatefulWidget {
+class AnimeInfoScreen extends StatelessWidget {
   final String animeId;
+  final bool showAnimeSearch;
   const AnimeInfoScreen({
     Key? key,
     required this.animeId,
+    this.showAnimeSearch = true,
   }) : super(key: key);
 
-  @override
-  State<AnimeInfoScreen> createState() => _AnimeInfoScreenState();
-}
-
-class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
   Future<AnimeInfo> fetchAnime() async {
     try {
-      final id = widget.animeId;
-      final response = await http.get(animeDetails(id));
+      final id = animeId;
+      final response = await http.get(animeDetails(id, showAnimeSearch: showAnimeSearch));
       if (response.statusCode != 200) {
         throw Exception(response.reasonPhrase.toString());
       }
@@ -31,11 +28,6 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
     } catch (_) {
       rethrow;
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
   }
 
   @override
@@ -135,6 +127,7 @@ class _AnimeInfoScreenState extends State<AnimeInfoScreen> {
                               child: AnimeWatchCard(
                                 animeEpisodeId: episodes[index].id,
                                 animeInfo: animeInfo,
+                                showAnimeSearch: showAnimeSearch,
                               ),
                             );
                           },

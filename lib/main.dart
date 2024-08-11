@@ -4,11 +4,7 @@ import 'package:anime_chill/api/models.dart';
 import 'package:anime_chill/screens/anime_list.dart';
 import 'package:anime_chill/screens/home_popular.dart';
 import 'package:anime_chill/screens/home_search.dart';
-import 'package:anime_chill/screens/home_search_manga.dart';
-import 'package:anime_chill/screens/manga_list_screen.dart';
-import 'package:anime_chill/screens/manga_read_page.dart';
 import 'package:anime_chill/screens/particular_anime.dart';
-import 'package:anime_chill/screens/particular_manga.dart';
 import 'package:anime_chill/screens/video_player.dart';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/cupertino.dart';
@@ -39,59 +35,36 @@ class AppRoutes {
     );
 
     router.define(
-      '/anime_list_screen',
+      '/anime_list_screen/:searchAnime',
       handler: Handler(
-        type: HandlerType.function,
         handlerFunc: (context, params) {
           final arguments = context?.settings?.arguments;
+          final searchAnime = params['searchAnime']?[0] ?? 'true';
           if (arguments == null) return const ErrorPage();
           final animeList = arguments as List<AnimeSearchResult>;
-          return AnimeListScreen(results: animeList);
-        },
-      ),
-    );
-
-    router.define(
-      '/manga_list_screen',
-      handler: Handler(handlerFunc: (context, params) {
-        final arguments = context?.settings?.arguments;
-        if (arguments == null) return const ErrorPage();
-        final mangaList = arguments as List<MangaSearchElement>;
-        return MangaListScreen(results: mangaList);
-      }),
-    );
-
-    router.define(
-      '/anime_info/:id',
-      handler: Handler(
-        handlerFunc: (context, params) {
-          debugPrint(context?.mounted.toString());
-          final animeId = params['id']?[0];
-          if (animeId == null) return const ErrorPage();
-          return AnimeInfoScreen(
-            animeId: animeId,
-            key: ValueKey(Random().nextInt(9999)),
+          return AnimeListScreen(
+            results: animeList,
+            showAnimeSearch: bool.tryParse(searchAnime) ?? true,
           );
         },
       ),
     );
 
     router.define(
-      '/manga_info/:id',
-      handler: Handler(handlerFunc: (context, params) {
-        final mangaId = params['id']?[0];
-        if (mangaId == null) return const ErrorPage();
-        return MangaInfoScreen(mangaId: mangaId);
-      }),
-    );
-
-    router.define(
-      '/manga_reader/:id',
-      handler: Handler(handlerFunc: (context, params) {
-        final chapterId = params['id']?[0];
-        if (chapterId == null) return const ErrorPage();
-        return MangaReadingPage(chapterID: chapterId);
-      }),
+      '/anime_info/:id/:searchAnime',
+      handler: Handler(
+        handlerFunc: (context, params) {
+          debugPrint(context?.mounted.toString());
+          final animeId = params['id']?[0];
+          final searchAnime = params['searchAnime']?[0] ?? 'true';
+          if (animeId == null) return const ErrorPage();
+          return AnimeInfoScreen(
+            animeId: Uri.decodeComponent(animeId),
+            showAnimeSearch: bool.tryParse(searchAnime) ?? true,
+            key: ValueKey(Random().nextInt(9999)),
+          );
+        },
+      ),
     );
 
     router.define(
@@ -214,7 +187,7 @@ class _AnimatedSearchPageState extends State<AnimatedSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(showAnimeSearch ? "SEARCH ANIME" : "SEARCH MANGA"),
+        title: Text(showAnimeSearch ? "SEARCH ANIME" : "SEARCH MOVIES"),
         actions: [
           Switch(
             value: showAnimeSearch,
@@ -237,7 +210,7 @@ class _AnimatedSearchPageState extends State<AnimatedSearchPage> {
             child: child,
           );
         },
-        child: showAnimeSearch ? const SearchPage() : const MangaSearchPage(),
+        child: SearchPage(showAnimeSearch),
       ),
     );
   }

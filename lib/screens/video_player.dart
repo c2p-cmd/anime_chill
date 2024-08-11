@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:chewie/chewie.dart' show ChewieController, Chewie, OptionItem;
+import 'package:chewie/chewie.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:share_plus/share_plus.dart';

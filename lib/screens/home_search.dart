@@ -8,7 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class SearchPage extends StatefulWidget {
-  const SearchPage({Key? key}) : super(key: key);
+  final bool showAnimeSearch;
+  const SearchPage(this.showAnimeSearch, {Key? key}) : super(key: key);
 
   @override
   State<SearchPage> createState() => _SearchPageState();
@@ -72,7 +73,7 @@ class _SearchPageState extends State<SearchPage> {
                 final animeToSearch = controller.text;
                 try {
                   final response = await http.get(
-                    searchAnime(animeToSearch),
+                    searchAnime(animeToSearch, widget.showAnimeSearch ? gogoAnime : flixhq),
                     headers: {
                       'Content-type': 'application/json; charset=utf-8'
                     },
@@ -93,7 +94,7 @@ class _SearchPageState extends State<SearchPage> {
                     if (context.mounted) {
                       AppRoutes.router.navigateTo(
                         context,
-                        "/anime_list_screen",
+                        "/anime_list_screen/${widget.showAnimeSearch}",
                         routeSettings: RouteSettings(
                           name: "/anime_list_screen",
                           arguments: animeList,
@@ -101,6 +102,7 @@ class _SearchPageState extends State<SearchPage> {
                       );
                     }
                   } else {
+                    debugPrint(response.body.toString());
                     scaffoldMessengerState.showSnackBar(
                       SnackBar(
                         content: Text(

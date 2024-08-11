@@ -5,9 +5,11 @@ import 'package:flutter/material.dart';
 
 class AnimeListScreen extends StatelessWidget {
   final List<AnimeSearchResult> results;
+  final bool showAnimeSearch;
   const AnimeListScreen({
     Key? key,
     required this.results,
+    this.showAnimeSearch = true,
   }) : super(key: key);
 
   @override
@@ -23,7 +25,8 @@ class AnimeListScreen extends StatelessWidget {
               itemBuilder: (context, i) {
                 final animeSearchResult = results[i];
                 return ListTile(
-                  key: ValueKey('${animeSearchResult.id}-${DateTime.now().millisecondsSinceEpoch}'),
+                  key: ValueKey(
+                      '${animeSearchResult.id}-${DateTime.now().millisecondsSinceEpoch}'),
                   enableFeedback: true,
                   isThreeLine: true,
                   leading: CircleAvatar(
@@ -45,7 +48,7 @@ class AnimeListScreen extends StatelessWidget {
                   onTap: () {
                     AppRoutes.router.navigateTo(
                       context,
-                      "/anime_info/${animeSearchResult.id}",
+                      "/anime_info/${Uri.encodeComponent(animeSearchResult.id)}/$showAnimeSearch",
                     );
                   },
                 );
