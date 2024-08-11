@@ -43,11 +43,12 @@ class _SearchPageState extends State<SearchPage> {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 30.0),
         child: Column(
+          key: ValueKey(widget.showAnimeSearch),
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              "assets/anime-img.png",
+              widget.showAnimeSearch ? "assets/anime-img.png" : "assets/movie-img.png",
               height: 200,
               fit: BoxFit.fitHeight,
             ),
