@@ -108,31 +108,35 @@ class _AnimeVideoPlayerState extends State<AnimeVideoPlayer> {
             ),
           ],
         ),
-        body: Center(
-          child: videoPlayerForPlatform(),
+        body: SafeArea(
+          top: false,
+          right: false,
+          left: false,
+          bottom: true,
+          child: Center(
+            child: videoPlayerForPlatform(),
+          ),
         ),
       ),
     );
   }
 
   Widget videoPlayerForPlatform() {
-    final loading = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(
-          "Loading... ${_controller.value.hasError ? _controller.value.errorDescription.toString() : ""}",
-        ),
-        const CupertinoActivityIndicator()
-      ],
-    );
-
     return _controller.value.isInitialized
         ? AspectRatio(
             aspectRatio: _controller.value.aspectRatio,
             child: Chewie(controller: _chewieController),
           )
-        : loading;
+        : Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                "Loading... ${_controller.value.hasError ? _controller.value.errorDescription.toString() : ""}",
+              ),
+              const CupertinoActivityIndicator()
+            ],
+          );
   }
 
   FutureOr<dynamic> setChewie() {
