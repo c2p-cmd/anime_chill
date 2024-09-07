@@ -16,7 +16,7 @@ enum Routes: Hashable, View, Codable {
         case .movieInfo(let searchModel):
             MovieInfoView(movie: searchModel)
         case .videoPlayer(let id, let url):
-            VideoPlayer(id: id, url: url)
+            MyVideoPlayer(id: id, url: url)
         }
     }
 }
