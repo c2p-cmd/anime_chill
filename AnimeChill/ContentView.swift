@@ -76,6 +76,11 @@ struct ContentView: View {
                 }
             }
             .buttonStyle(PlainButtonStyle())
+            .contextMenu {
+                Button("Remove From Favourites", systemImage: "star.slash.fill", role: .destructive) {
+                    vm.removeFromFavourites(searchModel: searchResult)
+                }
+            }
         }
     }
 }
@@ -108,7 +113,9 @@ extension ContentView {
             Task {
                 if self.isBusy { return }
                 
-                self.isBusy = true
+                await MainActor.run {
+                    self.isBusy = true
+                }
                 let api: API = .search(query: searchTerm)
                 let searchResults = api.fetch(ofType: SearchModelPaginated.self)
                 
@@ -126,8 +133,26 @@ extension ContentView {
                         }
                     }
                 }
-                self.isBusy = false
+                await MainActor.run {
+                    self.isBusy = false
+                }
             }
+        }
+        
+        func removeFromFavourites(searchModel: SearchModel) {
+            guard let data = UserDefaults.standard.data(forKey: "Favourites") else {
+                return
+            }
+            guard var results = try? JSONDecoder().decode([SearchModel].self, from: data) else { return }
+            guard let index = results.firstIndex(of: searchModel) else { return }
+            
+            results.remove(at: index)
+            
+            if let encodedData = try? JSONEncoder().encode(results) {
+                self.isBusy = true
+                UserDefaults.standard.set(encodedData, forKey: "Favourites")
+            }
+            self.isBusy = false
         }
     }
 }
