@@ -15,6 +15,9 @@ struct VideoPlayer: View {
     var body: some View {
         VideoPlayerView(url: url)
             .navigationTitle(id)
+#if !os(macOS)
+            .navigationBarTitleDisplayMode(.inline)
+#endif
     }
 }
 
