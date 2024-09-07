@@ -28,6 +28,9 @@ struct VideoPlayerView: NSViewRepresentable {
     func makeNSView(context: Context) -> AVPlayerView {
         let playerVC = AVPlayerView()
         playerVC.player = AVPlayer(url: URL(string: url)!)
+        playerVC.allowsPictureInPicturePlayback = true
+        playerVC.showsFullScreenToggleButton = true
+        playerVC.showsSharingServiceButton = true
         return playerVC
     }
     
