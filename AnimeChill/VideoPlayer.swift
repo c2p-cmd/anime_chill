@@ -8,9 +8,21 @@
 import AVKit
 import SwiftUI
 
-struct VideoPlayer: View {
+struct MyVideoPlayer: View {
     let id: String
     let url: String
+    
+    init(id: String, url: String) {
+        self.id = id
+        self.url = url
+#if !os(macOS)
+        try? AVAudioSession.sharedInstance().setCategory(
+            .playback,
+            mode: .moviePlayback,
+            options: [.allowAirPlay, .allowBluetooth, .allowBluetoothA2DP]
+        )
+#endif
+    }
     
     var body: some View {
         VideoPlayerView(url: url)
@@ -44,7 +56,6 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         let vc = AVPlayerViewController()
         vc.player = AVPlayer(url: URL(string: url)!)
         vc.allowsPictureInPicturePlayback = true
-        vc.canStartPictureInPictureAutomaticallyFromInline = true
         vc.entersFullScreenWhenPlaybackBegins = true
         vc.exitsFullScreenWhenPlaybackEnds = true
         return vc
@@ -56,6 +67,6 @@ struct VideoPlayerView: UIViewControllerRepresentable {
 
 #Preview {
     NavigationStack {
-        VideoPlayer(id: "Something?", url: "https://an.bigtimedelivery.net/_v13/7d0b992f51e49aa62c052e9f5f396d7aebd905fbb5d934e38421a9af828d4842fe3a0a403e348332c54bc05acfbcaab8f78a4104caa722feb9f01c0c44529f5101603a0d2d3b5701c99343158ed42afe7c998c518672622ca5f2e54a4273c6670545c62cbf8c8e2d787f5f4b7bbb80b3a260f822130dff89cb81b78ce786dc84f2daf9e53bc6bccc14fee7df243a981c/720/index.m3u8")
+        MyVideoPlayer(id: "Something?", url: "https://an.bigtimedelivery.net/_v13/7d0b992f51e49aa62c052e9f5f396d7aebd905fbb5d934e38421a9af828d4842fe3a0a403e348332c54bc05acfbcaab8f78a4104caa722feb9f01c0c44529f5101603a0d2d3b5701c99343158ed42afe7c998c518672622ca5f2e54a4273c6670545c62cbf8c8e2d787f5f4b7bbb80b3a260f822130dff89cb81b78ce786dc84f2daf9e53bc6bccc14fee7df243a981c/720/index.m3u8")
     }
 }
