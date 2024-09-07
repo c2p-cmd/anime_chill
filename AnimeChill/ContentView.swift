@@ -114,12 +114,16 @@ extension ContentView {
                 
                 switch await searchResults.result {
                 case .success(let success):
-                    withAnimation {
-                        self.searchResults = success
+                    await MainActor.run {
+                        withAnimation {
+                            self.searchResults = success
+                        }
                     }
                 case .failure(let failure):
-                    withAnimation {
-                        self.error = failure as? AppError
+                    await MainActor.run {
+                        withAnimation {
+                            self.error = failure as? AppError
+                        }
                     }
                 }
                 self.isBusy = false
