@@ -9,9 +9,15 @@ import SwiftUI
 
 @main
 struct AnimeChillApp: App {
+    @State private var navigationModel = NavigationModel.shared
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            NavigationStack(path: $navigationModel.path) {
+                ContentView()
+                    .navigationTitle("Popcorny 🍿")
+            }
+            .environment(navigationModel)
         }
     }
 }

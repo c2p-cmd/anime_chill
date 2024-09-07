@@ -7,14 +7,16 @@
 
 import SwiftUI
 
-enum Routes: Hashable {
-    case searchResults([SearchModel])
+enum Routes: Hashable, View, Codable {
+    case movieInfo(SearchModel)
     case videoPlayer(id: String, url: String)
     
-    var view: some View {
+    var body: some View {
         switch self {
+        case .movieInfo(let searchModel):
+            MovieInfoView(movie: searchModel)
         case .videoPlayer(let id, let url):
-            EmptyView()
+            VideoPlayer(id: id, url: url)
         }
     }
 }
@@ -23,11 +25,43 @@ enum Routes: Hashable {
 class NavigationModel {
     static let shared = NavigationModel()
     
-    var path = NavigationPath()
+    var path: NavigationPath {
+        didSet {
+            savePath()
+        }
+    }
     
-    func push(to route: Routes) { path.append(route) }
+    init() {
+        if let data = UserDefaults.standard.data(forKey: "NavPath"),
+            let representation = try? JSONDecoder().decode(NavigationPath.CodableRepresentation.self, from: data) {
+            self.path = NavigationPath(representation)
+        } else {
+            self.path = NavigationPath()
+        }
+    }
     
-    func pop() { path.removeLast() }
+    func push(to route: Routes) {
+        path.append(route)
+        savePath()
+    }
     
-    func goHome() { path.removeLast(path.count) }
+    func pop() {
+        path.removeLast()
+        savePath()
+    }
+    
+    func goHome() {
+        path.removeLast(path.count)
+        savePath()
+    }
+    
+    private func savePath() {
+        guard let representation = path.codable else { return }
+        do {
+            let data = try JSONEncoder().encode(representation)
+            UserDefaults.standard.set(data, forKey: "NavPath")
+        } catch {
+            print(error)
+        }
+    }
 }

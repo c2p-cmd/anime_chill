@@ -8,8 +8,11 @@
 import SwiftUI
 
 struct MovieInfoView: View {
-    let movieId: String
+    let movie: SearchModel
     
+    var movieId: String { movie.id }
+    
+    @Environment(NavigationModel.self) var navModel
     @State private var vm = ViewModel()
     
     var body: some View {
@@ -22,10 +25,7 @@ struct MovieInfoView: View {
             
             if let movie = vm.movie {
                 movie.coverImage
-#if !os(macOS)
-                    .frame(height: 200)
-#endif
-                    .aspectRatio(contentMode: .fill)
+                    .aspectRatio(contentMode: .fit)
                 
                 Text("Released on **\(movie.releaseDate)**")
                     .font(.subheadline)
@@ -47,22 +47,27 @@ struct MovieInfoView: View {
                 switch vm.selectedSection {
                 case .episodes:
                     episodesList(episodes: movie.episodes)
-                        .sheet(item: $vm.selectedEpisode) {
-                            EpisodesStreamingSheet(episode: $0, media: movieId)
+                        .sheet(item: $vm.selectedEpisode) { ep in
+                            EpisodesStreamingSheet(episode: ep, media: movieId)
+//                                .environment(navModel)
+                                .presentationDetents([.fraction(0.33), .medium])
                         }
                 case .recommendations:
                     recommendationList(recommendations: movie.recommendations)
                 }
             }
         }
-        .navigationTitle(vm.movie?.title ?? movieId)
+        .navigationTitle(movie.title)
+        .toolbar {
+            let isFavourite = vm.isInFavourites(searchModel: movie)
+            Button("Favourite", systemImage: isFavourite ? "star.fill" : "star") {
+                vm.addToFavourites(searchModel: movie)
+            }
+            .tint(.yellow)
+            .symbolEffect(.scale.up.byLayer)
+        }
         .task {
-#if DEBUG
-            self.vm.movie = .mockOne()
-            self.vm.isBusy = false
-#else
             await self.vm.fetch(id: movieId)
-#endif
         }
     }
     
@@ -116,13 +121,14 @@ struct MovieInfoView: View {
                             .frame(height: 100)
                     }
                     .scaledToFit()
-                    .clipShape(.rect(cornerRadius: 20, style: .continuous))
+                    .clipShape(.rect(cornerRadius: 10, style: .continuous))
                     
                     Text(r.title)
                         .font(.headline)
                 }
             }
         }
+        .safeAreaPadding(.horizontal)
     }
 }
 
@@ -165,6 +171,28 @@ extension MovieInfoView {
                 }
             }
         }
+        
+        func isInFavourites(searchModel: SearchModel) -> Bool {
+            guard let data = UserDefaults.standard.data(forKey: "Favourites") else { return false }
+            guard let favs = try? JSONDecoder().decode([SearchModel].self, from: data) else { return false }
+            return favs.contains(searchModel)
+        }
+        
+        func addToFavourites(searchModel: SearchModel) {
+            guard !isInFavourites(searchModel: searchModel) else { return }
+            
+            var favs: [SearchModel] = []
+            if let data = UserDefaults.standard.data(forKey: "Favourites"),
+               let storedFavs = try? JSONDecoder().decode([SearchModel].self, from: data) {
+                favs = storedFavs
+            }
+            favs.append(searchModel)
+            isBusy = true
+            if let encodedData = try? JSONEncoder().encode(favs) {
+                UserDefaults.standard.set(encodedData, forKey: "Favourites")
+            }
+            isBusy = false
+        }
     }
 }
 
@@ -172,14 +200,17 @@ fileprivate struct EpisodesStreamingSheet: View {
     let episode: EpisodesModel
     let media: String
     
+    @Environment(NavigationModel.self) var navigationModel
+    @Environment(\.dismiss) var dismiss
+    
     @State private var streamingLinks: [StreamingLinksModel] = []
     @State private var error: String?
     @State private var isBusy = false
     
     var body: some View {
-        VStack {
+        List {
             Text(episode.title)
-                .font(.title.bold())
+                .font(.title3.bold())
             
             if isBusy {
                 ProgressView()
@@ -191,20 +222,33 @@ fileprivate struct EpisodesStreamingSheet: View {
                     .foregroundStyle(.red)
             }
             
-            List(streamingLinks) { link in
-                let route = Routes.videoPlayer(id: link.id, url: link.url)
-                NavigationLink(link.quality, value: route)
+            ForEach(streamingLinks) { link in
+                let season = episode.season != nil ? "S\(episode.season!) " : ""
+                let number = episode.number != nil ? "E\(episode.number!): " : ""
+                let title = season + number + episode.title
+                let route = Routes.videoPlayer(id: title, url: link.url)
+                Button {
+                    dismiss.callAsFunction()
+                    navigationModel.push(to: route)
+                } label: {
+                    HStack {
+                        Text(link.quality)
+                        
+                        Spacer()
+                        
+                        Image(systemName: "chevron.right")
+                    }
+                }
             }
         }
-        .padding(.top)
         .task {
             self.isBusy = true
             let api: API = .streamingLinks(episode: episode.id, media: media)
-            let task = api.fetch(ofType: [StreamingLinksModel].self)
+            let task = api.fetch(ofType: StreamingLinksResult.self)
             
             switch await task.result {
             case .success(let success):
-                self.streamingLinks = success
+                self.streamingLinks = success.sources
             case .failure(let failure):
                 self.error = failure.localizedDescription
             }
@@ -215,6 +259,7 @@ fileprivate struct EpisodesStreamingSheet: View {
 
 #Preview {
     NavigationStack {
-        MovieInfoView(movieId: "tv/watch-the-flash-39535")
+        MovieInfoView(movie: .mockOne())
+            .environment(NavigationModel())
     }
 }
