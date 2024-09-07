@@ -157,6 +157,9 @@ extension MovieInfoView {
         }
         
         func fetch(id: String) async {
+            if isBusy { return }
+            
+            isBusy = true
             let api: API = .movieInfo(id: id)
             let task = api.fetch(ofType: MovieInfoModel.self)
             
@@ -169,6 +172,7 @@ extension MovieInfoView {
                 case .failure(let failure):
                     self.error = failure as? AppError
                 }
+                isBusy = false
             }
         }
         
