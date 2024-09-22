@@ -53,6 +53,7 @@ struct MovieInfoView: View {
                     }
             }
         }
+        .scrollPosition(id: $vm.selectedEpisode)
         .navigationTitle(movie.title)
         .toolbar {
             let isFavourite = vm.isInFavourites(searchModel: movie)
