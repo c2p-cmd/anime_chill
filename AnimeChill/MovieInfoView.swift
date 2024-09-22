@@ -49,7 +49,11 @@ struct MovieInfoView: View {
                 episodesList(episodes: movie.episodes)
                     .sheet(item: $vm.selectedEpisode) { ep in
                         EpisodesStreamingSheet(episode: ep, media: movieId)
-#if !os(macOS)
+#if os(macOS)
+                            .sheetLargeSize()
+                            .frame(minWidth: 360, maxWidth: 600)
+                            .frame(minHeight: 180, maxHeight: 300)
+#else
                             .presentationDetents([.fraction(0.33), .medium])
 #endif
                     }
