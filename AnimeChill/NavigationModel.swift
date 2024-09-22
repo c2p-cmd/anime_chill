@@ -42,17 +42,14 @@ class NavigationModel {
     
     func push(to route: Routes) {
         path.append(route)
-        savePath()
     }
     
     func pop() {
         path.removeLast()
-        savePath()
     }
     
     func goHome() {
         path.removeLast(path.count)
-        savePath()
     }
     
     private func savePath() {
