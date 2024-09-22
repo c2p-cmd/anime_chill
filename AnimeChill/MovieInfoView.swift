@@ -36,25 +36,21 @@ struct MovieInfoView: View {
                     .font(.callout)
                     .padding(.horizontal)
                 
-                Picker("", selection: $vm.selectedSection) {
-                    ForEach(Sections.allCases) {
-                        Text($0.rawValue)
-                            .tag($0)
-                    }
+                Button("More like this...", systemImage: "arrow.2.circlepath") {
+                    vm.showRecommendationSheet = true
                 }
-                .pickerStyle(.segmented)
+                .sheet(isPresented: $vm.showRecommendationSheet) {
+                    MovieRecommendationsSheet(
+                        title: movie.title,
+                        recommendations: movie.recommendations
+                    )
+                }
                 
-                switch vm.selectedSection {
-                case .episodes:
-                    episodesList(episodes: movie.episodes)
-                        .sheet(item: $vm.selectedEpisode) { ep in
-                            EpisodesStreamingSheet(episode: ep, media: movieId)
-//                                .environment(navModel)
-                                .presentationDetents([.fraction(0.33), .medium])
-                        }
-                case .recommendations:
-                    recommendationList(recommendations: movie.recommendations)
-                }
+                episodesList(episodes: movie.episodes)
+                    .sheet(item: $vm.selectedEpisode) { ep in
+                        EpisodesStreamingSheet(episode: ep, media: movieId)
+                            .presentationDetents([.fraction(0.33), .medium])
+                    }
             }
         }
         .navigationTitle(movie.title)
@@ -106,50 +102,20 @@ struct MovieInfoView: View {
             .padding()
         }
     }
-    
-    func recommendationList(recommendations: [MovieInfoModel.Recommendations]) -> some View {
-        LazyVGrid(columns: [
-            GridItem(.flexible(minimum: 100, maximum: 200)),
-            GridItem(.flexible(minimum: 100, maximum: 200)),
-        ]) {
-            ForEach(recommendations) { (r: MovieInfoModel.Recommendations) in
-                VStack(alignment: .center, spacing: 6) {
-                    AsyncImage(url: URL(string: r.image)) {
-                        $0.resizable()
-                    } placeholder: {
-                        ProgressView()
-                            .frame(height: 100)
-                    }
-                    .scaledToFit()
-                    .clipShape(.rect(cornerRadius: 10, style: .continuous))
-                    
-                    Text(r.title)
-                        .font(.headline)
-                }
-            }
-        }
-        .safeAreaPadding(.horizontal)
-    }
 }
 
 extension MovieInfoView {
-    enum Sections: String, Identifiable, CaseIterable {
-        var id: Self { self }
-        
-        case episodes = "Episodes"
-        case recommendations = "Recommendations"
-    }
-    
     @Observable
     class ViewModel {
         var movie: MovieInfoModel?
         
         var selectedEpisode: EpisodesModel?
-        var selectedSection: Sections = .episodes
         
         var error: AppError?
         
         var isBusy = false
+        
+        var showRecommendationSheet = false
         
         var showError: Bool {
             get { self.error != nil }
@@ -257,6 +223,52 @@ fileprivate struct EpisodesStreamingSheet: View {
                 self.error = failure.localizedDescription
             }
             self.isBusy = false
+        }
+    }
+}
+
+fileprivate struct MovieRecommendationsSheet: View {
+    let title: String
+    let recommendations: [MovieInfoModel.Recommendations]
+    
+    @Environment(NavigationModel.self) var navModel: NavigationModel
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView(.vertical) {
+                LazyVGrid(columns: [
+                    GridItem(.flexible(minimum: 100, maximum: 200)),
+                    GridItem(.flexible(minimum: 100, maximum: 200)),
+                ]) {
+                    ForEach(recommendations) { (r: MovieInfoModel.Recommendations) in
+                        Button {
+                            dismiss.callAsFunction()
+                            let route = Routes.movieInfo(r.searchModel)
+                            navModel.push(to: route)
+                        } label: {
+                            VStack(alignment: .center, spacing: 6) {
+                                AsyncImage(url: URL(string: r.image)) {
+                                    $0.resizable()
+                                } placeholder: {
+                                    ProgressView()
+                                        .frame(height: 100)
+                                }
+                                .scaledToFit()
+                                .clipShape(.rect(cornerRadius: 10, style: .continuous))
+                                
+                                Text(r.title)
+                                    .font(.headline)
+                            }
+                        }
+                    }
+                }
+                .safeAreaPadding(.horizontal)
+            }
+#if !os(macOS)
+            .navigationBarTitleDisplayMode(.inline)
+#endif
+            .navigationTitle("More Like \(title)")
         }
     }
 }
