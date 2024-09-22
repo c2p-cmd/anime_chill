@@ -49,7 +49,9 @@ struct MovieInfoView: View {
                 episodesList(episodes: movie.episodes)
                     .sheet(item: $vm.selectedEpisode) { ep in
                         EpisodesStreamingSheet(episode: ep, media: movieId)
+#if !os(macOS)
                             .presentationDetents([.fraction(0.33), .medium])
+#endif
                     }
             }
         }
@@ -212,6 +214,9 @@ fileprivate struct EpisodesStreamingSheet: View {
                 }
             }
         }
+        .toolbar {
+            Button("Close") { dismiss.callAsFunction() }
+        }
         .task {
             self.isBusy = true
             let api: API = .streamingLinks(episode: episode.id, media: media)
@@ -265,6 +270,9 @@ fileprivate struct MovieRecommendationsSheet: View {
                     }
                 }
                 .safeAreaPadding(.horizontal)
+            }
+            .toolbar {
+                Button("Close") { dismiss.callAsFunction() }
             }
 #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
