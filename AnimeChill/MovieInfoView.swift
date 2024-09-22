@@ -62,7 +62,7 @@ struct MovieInfoView: View {
             .tint(.yellow)
             .symbolEffect(.scale.up.byLayer)
         }
-        .task {
+        .task(id: self.movieId) {
             await self.vm.fetch(id: movieId)
         }
     }
