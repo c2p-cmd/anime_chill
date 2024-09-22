@@ -30,6 +30,14 @@ struct MyVideoPlayer: View {
 #if !os(macOS)
             .navigationBarTitleDisplayMode(.inline)
 #endif
+            .toolbar {
+                Menu {
+                    ShareLink(item: URL(string: url)!, message: Text(id))
+                    Link("Link to \(id)", destination: URL(string: url)!)
+                } label: {
+                    Label("Actions", systemImage: "ellipsis.circle")
+                }
+            }
     }
 }
 
