@@ -39,6 +39,17 @@ struct MovieInfoModel: Identifiable, Decodable, Hashable {
         let title: String
         let image: String
         let type: String
+        
+        var searchModel: SearchModel {
+            SearchModel(
+                id: id,
+                title: title,
+                image: image,
+                type: type,
+                seasons: nil,
+                releaseDate: nil
+            )
+        }
     }
     
     var coverImage: some View {
