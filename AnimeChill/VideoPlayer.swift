@@ -51,6 +51,7 @@ struct VideoPlayerView: NSViewRepresentable {
         playerVC.allowsPictureInPicturePlayback = true
         playerVC.showsFullScreenToggleButton = true
         playerVC.showsSharingServiceButton = true
+        playerVC.player?.preventsDisplaySleepDuringVideoPlayback = true
         return playerVC
     }
     
@@ -66,6 +67,7 @@ struct VideoPlayerView: UIViewControllerRepresentable {
         vc.allowsPictureInPicturePlayback = true
         vc.entersFullScreenWhenPlaybackBegins = true
         vc.exitsFullScreenWhenPlaybackEnds = true
+        vc.player?.preventsDisplaySleepDuringVideoPlayback = true
         return vc
     }
     
