@@ -1,4 +1,5 @@
-const _baseUrl = 'https://consumet-api-snowy.vercel.app';
+// const _baseUrl = 'https://consumet-api-snowy.vercel.app';
+const _baseUrl = 'https://my-consumet-api-dvbf.onrender.com';
 // const mine = 'https://webdis-z7xm.onrender.com';
 const gogoAnime = '$_baseUrl/anime/gogoanime';
 const flixhq = '$_baseUrl/movies/flixhq';
