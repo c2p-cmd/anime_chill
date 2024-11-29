@@ -14,6 +14,7 @@ struct MovieInfoView: View {
     
     @Environment(NavigationModel.self) var navModel
     @State private var vm = ViewModel()
+    @AppStorage("preffered_server") private var currentServer: API.Servers = .vidcloud
     
     var body: some View {
         ScrollView {
@@ -21,6 +22,18 @@ struct MovieInfoView: View {
                 ProgressView()
                     .frame(height: 100)
                     .progressViewStyle(.circular)
+            }
+            
+            if let error = vm.error {
+                Text("Error: \(error.description)")
+                    .font(.headline)
+                    .padding()
+            }
+            
+            Picker("Current Preferred Server", selection: $currentServer) {
+                ForEach(API.Servers.allCases) { server in
+                    server.label.tag(server)
+                }
             }
             
             if let movie = vm.movie {
@@ -54,10 +67,14 @@ struct MovieInfoView: View {
                             .frame(minWidth: 360, maxWidth: 600)
                             .frame(minHeight: 180, maxHeight: 300)
 #else
-                            .presentationDetents([.fraction(0.33), .medium])
+                            .presentationDetents([.fraction(0.33), .medium, .fraction(0.75)])
 #endif
                     }
             }
+        }
+        .alert(isPresented: $vm.showError, error: vm.error) { _ in
+        } message: { err in
+            Text(err.message)
         }
         .scrollPosition(id: $vm.selectedEpisode)
         .navigationTitle(movie.title)
@@ -181,39 +198,66 @@ fileprivate struct EpisodesStreamingSheet: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var streamingLinks: [StreamingLinksModel] = []
+    @State private var availableServers: [AvailableServersModel] = []
     @State private var error: String?
     @State private var isBusy = false
+    @AppStorage("preffered_server") private var currentServer: API.Servers?
     
     var body: some View {
         List {
             Text(episode.title)
                 .font(.title3.bold())
             
+            currentServer?.label
+            
             if isBusy {
                 ProgressView()
             }
             
             if let error {
-                Text(error)
-                    .font(.title2)
-                    .foregroundStyle(.red)
+                Section {
+                    Text(error)
+                        .font(.title2)
+                        .foregroundStyle(.red)
+                }
             }
             
-            ForEach(streamingLinks) { link in
-                let season = episode.season != nil ? "S\(episode.season!) " : ""
-                let number = episode.number != nil ? "E\(episode.number!): " : ""
-                let title = season + number + episode.title
-                let route = Routes.videoPlayer(id: title, url: link.url)
-                Button {
-                    dismiss.callAsFunction()
-                    navigationModel.push(to: route)
-                } label: {
-                    HStack {
-                        Text(link.quality)
-                        
-                        Spacer()
-                        
-                        Image(systemName: "chevron.right")
+            Section("Episode Streaming Links") {
+                ForEach(streamingLinks) { link in
+                    let season = episode.season != nil ? "S\(episode.season!) " : ""
+                    let number = episode.number != nil ? "E\(episode.number!): " : ""
+                    let title = season + number + episode.title
+                    let route = Routes.videoPlayer(id: title, url: link.url)
+                    Button {
+                        dismiss.callAsFunction()
+                        navigationModel.push(to: route)
+                    } label: {
+                        HStack {
+                            Text(link.quality)
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                        }
+                    }
+                }
+            }
+            
+            Section("Available Servers") {
+                ForEach(availableServers) { server in
+                    let route = Routes.webView(url: server.url)
+                    
+                    Button {
+                        dismiss.callAsFunction()
+                        navigationModel.push(to: route)
+                    } label: {
+                        HStack {
+                            Text(server.name.capitalized(with: .current))
+                            
+                            Spacer()
+                            
+                            Image(systemName: "chevron.right")
+                        }
                     }
                 }
             }
@@ -221,18 +265,37 @@ fileprivate struct EpisodesStreamingSheet: View {
         .toolbar {
             Button("Close") { dismiss.callAsFunction() }
         }
-        .task {
+        .task(id: self.episode.id) {
             self.isBusy = true
-            let api: API = .streamingLinks(episode: episode.id, media: media)
-            let task = api.fetch(ofType: StreamingLinksResult.self)
-            
-            switch await task.result {
-            case .success(let success):
-                self.streamingLinks = success.sources
-            case .failure(let failure):
-                self.error = failure.localizedDescription
+            await withTaskGroup(of: Void.self) { taskGroup in
+                taskGroup.addTask(operation: fetchAvailableServers)
+                taskGroup.addTask(operation: fetchStreamingLinks)
             }
             self.isBusy = false
+        }
+    }
+    
+    func fetchAvailableServers() async {
+        let api: API = .availableServers(episode: episode.id, media: media)
+        let task = api.fetch(ofType: [AvailableServersModel].self)
+        
+        switch await task.result {
+        case .success(let success):
+            self.availableServers = success
+        case .failure(let failure):
+            self.error = failure.localizedDescription
+        }
+    }
+    
+    func fetchStreamingLinks() async {
+        let api: API = .streamingLinks(episode: episode.id, media: media, server: currentServer)
+        let task = api.fetch(ofType: StreamingLinksResult.self)
+        
+        switch await task.result {
+        case .success(let success):
+            self.streamingLinks = success.sources
+        case .failure(let failure):
+            self.error = failure.localizedDescription
         }
     }
 }

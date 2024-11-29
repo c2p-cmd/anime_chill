@@ -70,6 +70,13 @@ struct EpisodesModel: Identifiable, Decodable, Hashable {
     let season: Int?
 }
 
+struct AvailableServersModel: Identifiable, Decodable, Hashable {
+    let name: String
+    let url: String
+    
+    var id: String { self.name }
+}
+
 struct StreamingLinksResult: Decodable, Hashable {
     let sources: [StreamingLinksModel]
 }

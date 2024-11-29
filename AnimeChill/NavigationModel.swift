@@ -10,6 +10,7 @@ import SwiftUI
 enum Routes: Hashable, View, Codable {
     case movieInfo(SearchModel)
     case videoPlayer(id: String, url: String)
+    case webView(url: String)
     
     var body: some View {
         switch self {
@@ -17,6 +18,8 @@ enum Routes: Hashable, View, Codable {
             MovieInfoView(movie: searchModel)
         case .videoPlayer(let id, let url):
             MyVideoPlayer(id: id, url: url)
+        case .webView(let url):
+            WebViewWrapper(url: url)
         }
     }
 }
